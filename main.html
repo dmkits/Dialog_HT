@@ -41,21 +41,49 @@
     require(["app", "dijit/layout/BorderContainer", "dijit/layout/LayoutContainer", "dijit/layout/TabContainer", "dijit/layout/ContentPane",
                 "dijit/MenuBar", "dijit/MenuBarItem", "dijit/PopupMenuBarItem", "dijit/Menu", "dijit/MenuItem", "dijit/MenuSeparator",
                 "dijit/form/ToggleButton", "dojox/layout/ContentPane",
-                "dialogs", "request","dijit/form/Button","dijit/Dialog","hTableSimple", "dojo/domReady!"],
+                "dialogs", "request","dijit/form/Button","dijit/Dialog","hTableSimple", "dijit/ConfirmDialog","dialogsWTable","dojo/domReady!"],
             function (APP, BorderContainer, LayoutContainer, TabContainer, ContentPane,
                       MenuBar, MenuBarItem, PopupMenuBarItem, Menu, MenuItem, MenuSeparator,
-                      ToggleButton, XContentPane, dialogs, Request, Button,Dialog,HTableSimple) {
+                      ToggleButton, XContentPane, dialogs, Request, Button,Dialog,HTableSimple,ConfirmDialog,DialogsWTable) {
                 console.log("START MAIN PAGE...");//!!!IT'S FOR TESTING!!!
 
                 var but = new Button({"label": "show dialog"});
                 document.body.appendChild(but.domNode);
                 but.startup();
 
+                var but2=new Button({"label": "show dialogsWTable"});
+                document.body.appendChild(but2.domNode);
+                but2.startup();
+
+//                var dialogsWTable=new DialogsWTable({"title":"dialogsWTable"});
+
+                but2.onClick=function(){
+                    Request.postJSONData({url: "/get_data_for_dialog"},
+                            function (success, data) {
+                                console.log("data=", data);
+                                if (!success) {
+                                    console.log("No connection with server");
+                                    return;
+                                }
+                                //dialogsWTable.tableData=data;
+//                                dialogContent.appendChild(tableSimple.domNode);
+//                                tableSimple.startup();
+//                                tableSimple.setContent(data);
+
+                                var dialogsWTable=new DialogsWTable({"title":"dialogsWTable",tableData:data});
+                                dialogsWTable.show();
+                            });
+                };
+
                 var dialogContent = document.createElement('div');
                 dialogContent.setAttribute("id", "dialog_content");
 
-                var dialog = new Dialog({"title": "Hello!", "content":dialogContent});
+                var divForButtons= document.createElement('div');
+                var dialog = new Dialog({"title": "Hello!", "content":dialogContent,"actionBarTemplate":divForButtons});
                 dialog.startup();
+
+               // dialog.actionBarTemplate="<div>sdfas</div>div>";
+               // divForButtons.appendChild(but2.domNode);
 
                 var tableSimple = new HTableSimple({"id":'dialog_content_table'});
                 but.onClick = function () {

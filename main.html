@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" lang="ru" Accept-Language="ru"/>
+    <!--[if IE]>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+    <![endif]-->
+
+    <!--<link rel="icon" type="image/gif" id="favicon_id"/>-->
+
+    <!--<link rel="icon" type="image/gif" href="/icons/moda32x32.ico"/>-->
+    <!--[if IE]>
+    <!---link rel="stylesheet" type="text/css" href="/css/main_ie.css"--!>
+    <!--<link rel="shortcut icon" href="icons/moda32x32.ico" />-->
+    <!--<![endif]&ndash;&gt;-->
+    <!--[if !IE]><!-->
+    <!--link rel="stylesheet" type="text/css" href="/css/main_nie.css"--!>
+    <!--<![endif]-->
+
+    <script src="/jslib/handsontable/handsontable.full.min.js"></script>
+    <link rel="stylesheet" media="screen" href="/jslib/handsontable/handsontable.full.min.css">
+    <script src="/jslib/handsontable/numbro/languages/ru-RU.min.js"></script>
+    <script src="/jslib/handsontable/moment/moment.js"></script>
+    <script src="/jslib/handsontable/moment/locale/ru.js"></script>
+
+    <link rel="stylesheet" href="/jslib/dijit/themes/claro/claro.css" media="screen">
+    <!--<link rel="stylesheet" href="/jslib/dijit/themes/soria/soria.css" media="screen">-->
+    <!--<link rel="stylesheet" href="/jslib/dijit/themes/nihilo/nihilo.css" media="screen">-->
+    <!--<link rel="stylesheet" href="/jslib/dijit/themes/tundra/tundra.css" media="screen">-->
+    <script type="text/javascript" src="/jslib/dojo/dojo.js" data-dojo-config="async:true,parseOnLoad:true"></script>
+
+    <link rel="stylesheet" href="/jslib/htable.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/jslib/contentController.css" media="screen">
+    <script type="text/javascript" src="/jslib/jsBarcode/JsBarcode.ean-upc.min.js"></script>
+
+</head>
+<body class="claro">
+</body>
+<script type="text/javascript">
+    require(["app", "dijit/layout/BorderContainer", "dijit/layout/LayoutContainer", "dijit/layout/TabContainer", "dijit/layout/ContentPane",
+                "dijit/MenuBar", "dijit/MenuBarItem", "dijit/PopupMenuBarItem", "dijit/Menu", "dijit/MenuItem", "dijit/MenuSeparator",
+                "dijit/form/ToggleButton", "dojox/layout/ContentPane",
+                "dialogs", "request","dijit/form/Button","dijit/Dialog","hTableSimple", "dojo/domReady!"],
+            function (APP, BorderContainer, LayoutContainer, TabContainer, ContentPane,
+                      MenuBar, MenuBarItem, PopupMenuBarItem, Menu, MenuItem, MenuSeparator,
+                      ToggleButton, XContentPane, dialogs, Request, Button,Dialog,HTableSimple) {
+                console.log("START MAIN PAGE...");//!!!IT'S FOR TESTING!!!
+
+                var but = new Button({"label": "show dialog"});
+                document.body.appendChild(but.domNode);
+                but.startup();
+
+                var dialogContent = document.createElement('div');
+                dialogContent.setAttribute("id", "dialog_content");
+
+                var dialog = new Dialog({"title": "Hello!", "content":dialogContent});
+                dialog.startup();
+
+                var tableSimple = new HTableSimple({"id":'dialog_content_table'});
+                but.onClick = function () {
+                    dialog.show();
+                    Request.postJSONData({url: "/get_data_for_dialog"},
+                            function (success, data) {
+                                console.log("data=", data);
+                                if (!success) {
+                                    console.log("No connection with server");
+                                    return;
+                                }
+                                dialogContent.appendChild(tableSimple.domNode);
+                                tableSimple.startup();
+                                tableSimple.setContent(data);
+                                dialog.show();
+                            });
+                }
+            });
+</script>
+</html>

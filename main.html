@@ -46,6 +46,11 @@
                       MenuBar, MenuBarItem, PopupMenuBarItem, Menu, MenuItem, MenuSeparator,
                       ToggleButton, XContentPane, dialogs, Request, Button,Dialog,HTableSimple,ConfirmDialog,DialogsWTable) {
                 console.log("START MAIN PAGE...");//!!!IT'S FOR TESTING!!!
+              var testDialog = new Dialog();   console.log("testDialog=",testDialog);
+               // console.log("Object.keys(obj)=",Object.keys(testDialog));
+               // console.log("Object.getOwnPropertyNames(testDialog)=",Object.getOwnPropertyNames(testDialog).sort());
+
+
 
                 var but = new Button({"label": "show dialog"});
                 document.body.appendChild(but.domNode);
@@ -56,7 +61,7 @@
                 but2.startup();
 
 //                var dialogsWTable=new DialogsWTable({"title":"dialogsWTable"});
-
+               // var dialogsWTable=new DialogsWTable({"title":"dialogsWTable"});
                 but2.onClick=function(){
                     Request.postJSONData({url: "/get_data_for_dialog"},
                             function (success, data) {
@@ -65,27 +70,17 @@
                                     console.log("No connection with server");
                                     return;
                                 }
-                                //dialogsWTable.tableData=data;
-//                                dialogContent.appendChild(tableSimple.domNode);
-//                                tableSimple.startup();
-//                                tableSimple.setContent(data);
 
-                                var dialogsWTable=new DialogsWTable({"title":"dialogsWTable",tableData:data});
-                                dialogsWTable.show();
+                                DialogsWTable.showDialog({getTableDataURL:"/get_data_for_dialog"});
                             });
                 };
 
-                var dialogContent = document.createElement('div');
-                dialogContent.setAttribute("id", "dialog_content");
+                //var dialogContent = document.createElement('div');
+                //dialogContent
 
-                var divForButtons= document.createElement('div');
-                var dialog = new Dialog({"title": "Hello!", "content":dialogContent,"actionBarTemplate":divForButtons});
-                dialog.startup();
-
-               // dialog.actionBarTemplate="<div>sdfas</div>div>";
-               // divForButtons.appendChild(but2.domNode);
-
-                var tableSimple = new HTableSimple({"id":'dialog_content_table'});
+                var dialog = new Dialog({"title": "Hello!","style":"height:100px;", "content":document.createElement('div')});
+                //dialog.startup();
+                var tableSimple = new HTableSimple({});
                 but.onClick = function () {
                     dialog.show();
                     Request.postJSONData({url: "/get_data_for_dialog"},
@@ -95,10 +90,11 @@
                                     console.log("No connection with server");
                                     return;
                                 }
-                                dialogContent.appendChild(tableSimple.domNode);
+                                dialog.content.appendChild(tableSimple.domNode);
                                 tableSimple.startup();
                                 tableSimple.setContent(data);
-                                dialog.show();
+                                dialog.startup();
+                              //  dialog.show();
                             });
                 }
             });

@@ -5,57 +5,58 @@
 //dialogWTable(params)
 
 
+/**
+ * Created by dmkits on 30.12.16.
+ */
+define([ "dijit/Dialog", "dojo/keys", "dojo/on", "dijit/registry","hTableSimple","request", "dojo/domReady!"],
+    function (Dialog, keys, on, registry,HTableSimple,Request) {
+        return {
+            showDialog: function (params,tableData) {
+                if (!tableData) {
+                    if (!params||!params.getTableDataURL){
+                        console.log("No tableData and getTableDataURL");
+                        return;
+                    }
+                    Request.postJSONData({url: params.getTableDataURL},
+                        function (success, data) {
+                            if (!success) {
+                                console.log("No connection with server");
+                                return;
+                            }
+                            tableData = data;
+                            buildDialog(params,tableData);
+                        });
+                }else return buildDialog(params,tableData);
+            }
+        };
 
-define(["dojo/_base/declare", "dijit/Dialog","dijit/form/Button","hTableSimple", "dijit/registry","request","dialogsWTable"],
-    function(declare, Dialog, Button, HTableSimple, Registry, Request){
-        return declare("DialogWTable", [Dialog], {
-             dataURL:"",
-             height: undefined,
-             width: undefined,
-             tableData: null,
-            constructor: function (args, parentName) {
-                //this.srcNodeRef = document.getElementById(parentName);
-                declare.safeMixin(this,args);
-            },
+        function buildDialog(params,tableData){
+            var myDialog = registry.byId("dialogWithTable");
+            var styleStr="";
+            if(!myDialog){
+                myDialog = new Dialog({"id":"dialogWithTable","content":document.createElement('div') });
+                myDialog.show();
+                myDialog.startup();
+                myDialog.tableSimple=new HTableSimple();
+                myDialog.tableSimple.startup();
+                myDialog.content.appendChild(myDialog.tableSimple.domNode);
+            }
+            if (params.title) myDialog.set("title", params.title); else myDialog.set("title", "");
 
-            postCreate: function(){
-                var instance = this;
-                //var styleStr = "";
-                //if (this.height) {
-                //    styleStr = styleStr + "height:" + this.height + "px;"
-                //}
-                //if (this.width) {
-                //    styleStr = styleStr + "width:" + this.width + "px;"
-                //}
-                //if(styleStr.length>0){
-                //    this.set("style",styleStr)
-                //}
-                if(this.tableData){
-                    this.createDialogTable(instance.tableData)
-                }
-                //if(!this.tableData&&this.dataURL){
-                //    this.getTableDataURL(this.tableData)
-                //}
-              //  this.createTable()
-            },
-            createDialogTable:function(tableData){
-                var dialogContent = document.createElement('div');
-                //this.set("content",dialogContent);
-                this.content=dialogContent;
-                var tableSimple = new HTableSimple({});
+            if(params.height){
+                styleStr=styleStr+params.height;
+                if(styleStr.charAt(styleStr.length-1)!=";")styleStr=styleStr+";";
+            }
+            if(params.width){
+                styleStr=styleStr+params.width;
+                if(styleStr.charAt(styleStr.length-1)!=";")styleStr=styleStr+";";
+            }
+            if(params.style) styleStr=styleStr+params.style;
+            if(styleStr.length>0){
+                myDialog.set("style", styleStr);
+            }else myDialog.set("style", "");
 
-                dialogContent.appendChild(tableSimple.domNode);
-                tableSimple.startup();
-                tableSimple.setContent(tableData);
-            },
-
-            /**
-             * buttons = { <Label>:onClickFunction(dialogInstance,tableContentData) }
-             * @param buttons
-             */
-            //
-            //addActionButtons:function(buttons){
-            //
-            //}
-        });
-});
+            myDialog.tableSimple.setContent(tableData);
+            return myDialog.show();
+        }
+    });

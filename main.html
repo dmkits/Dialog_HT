@@ -46,11 +46,6 @@
                       MenuBar, MenuBarItem, PopupMenuBarItem, Menu, MenuItem, MenuSeparator,
                       ToggleButton, XContentPane, dialogs, Request, Button,Dialog,HTableSimple,ConfirmDialog,DialogsWTable) {
                 console.log("START MAIN PAGE...");//!!!IT'S FOR TESTING!!!
-              var testDialog = new Dialog();   console.log("testDialog=",testDialog);
-               // console.log("Object.keys(obj)=",Object.keys(testDialog));
-               // console.log("Object.getOwnPropertyNames(testDialog)=",Object.getOwnPropertyNames(testDialog).sort());
-
-
 
                 var but = new Button({"label": "show dialog"});
                 document.body.appendChild(but.domNode);
@@ -60,8 +55,9 @@
                 document.body.appendChild(but2.domNode);
                 but2.startup();
 
-//                var dialogsWTable=new DialogsWTable({"title":"dialogsWTable"});
-               // var dialogsWTable=new DialogsWTable({"title":"dialogsWTable"});
+                var but3=new Button({"label": "Button in dialog"});
+                but3.startup();
+
                 but2.onClick=function(){
                     Request.postJSONData({url: "/get_data_for_dialog"},
                             function (success, data) {
@@ -71,15 +67,18 @@
                                     return;
                                 }
 
-                                DialogsWTable.showDialog({getTableDataURL:"/get_data_for_dialog"});
+                                var buttons=[];
+                                var b1={"label":"this is the label",onClickFunction:function(dialog,data){
+                                    dialog.hide();
+                                    console.log("data from button=",data);
+                                }};
+                                buttons.push(b1);
+                                DialogsWTable.showDialog({"title":"It is a title","buttons":buttons},data);
                             });
                 };
 
-                //var dialogContent = document.createElement('div');
-                //dialogContent
-
-                var dialog = new Dialog({"title": "Hello!","style":"height:100px;", "content":document.createElement('div')});
-                //dialog.startup();
+                var dialog = new Dialog({"title": "Hello!","content":document.createElement('div')});
+                dialog.addChild(but3);
                 var tableSimple = new HTableSimple({});
                 but.onClick = function () {
                     dialog.show();
@@ -94,7 +93,6 @@
                                 tableSimple.startup();
                                 tableSimple.setContent(data);
                                 dialog.startup();
-                              //  dialog.show();
                             });
                 }
             });

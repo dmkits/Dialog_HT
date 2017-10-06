@@ -1,15 +1,14 @@
 /**
- * params = { title, height, width, tableData, getTableDataURL, buttons }
- * buttons = { <Label>:onClickFunction(dialogInstance,tableContentData) }
+ * params = { title, height, width, tableData, getTableDataURL, buttons[] }
+ * button = { <Label>:onClickFunction(dialogInstance,tableContentData) }
  */
-//dialogWTable(params)
 
 
 /**
- * Created by dmkits on 30.12.16.
+ * Created by ianagez on 06.10.2017
  */
-define([ "dijit/Dialog", "dojo/keys", "dojo/on", "dijit/registry","hTableSimple","request", "dojo/domReady!"],
-    function (Dialog, keys, on, registry,HTableSimple,Request) {
+define([ "dijit/Dialog", "dijit/registry", "hTableSimple","dijit/form/Button","request", "dojo/domReady!"],
+    function (Dialog, registry,HTableSimple, Button, Request) {
         return {
             showDialog: function (params,tableData) {
                 if (!tableData) {
@@ -41,6 +40,15 @@ define([ "dijit/Dialog", "dojo/keys", "dojo/on", "dijit/registry","hTableSimple"
                 myDialog.tableSimple.startup();
                 myDialog.content.appendChild(myDialog.tableSimple.domNode);
             }
+            if (myDialog.hasButtons) {
+               var children =  myDialog.getChildren();
+                for(var j in children){
+                    var child=children[j];
+                    if(child.type=="button"){
+                        child.destroy();
+                    }
+                }
+            }
             if (params.title) myDialog.set("title", params.title); else myDialog.set("title", "");
 
             if(params.height){
@@ -56,7 +64,24 @@ define([ "dijit/Dialog", "dojo/keys", "dojo/on", "dijit/registry","hTableSimple"
                 myDialog.set("style", styleStr);
             }else myDialog.set("style", "");
 
-            myDialog.tableSimple.setContent(tableData);
+            if(params.buttons){
+                setButtonsForDialog(myDialog,tableData, params.buttons);
+            }
+                myDialog.tableSimple.setContent(tableData);
             return myDialog.show();
+        }
+
+        function setButtonsForDialog(myDialog,tableData,buttons){
+            for(var i in buttons){
+                myDialog.hasButtons=true;
+                var butObj=buttons[i];
+                var button = new Button();
+                if(butObj.label)button.set('label',butObj.label); button.set('label',butObj.label);
+                button.onClick=function(){
+                    butObj.onClickFunction(myDialog,tableData);
+                };
+                button.startup();
+                myDialog.addChild(button);
+            }
         }
     });

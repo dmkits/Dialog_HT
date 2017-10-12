@@ -600,6 +600,6 @@ define(["dojo/_base/declare", "dijit/layout/ContentPane","dojox/widget/Standby",
                 };
                 var popupMenuItems = this.popupMenuItems;
                 this.handsonTable.updateSettings({ contextMenu: { items: popupMenuItems } });
-            }
+            },
         });
     });

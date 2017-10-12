@@ -66,14 +66,15 @@
                                     console.log("No connection with server");
                                     return;
                                 }
-
                                 var buttons=[];
                                 var b1={"label":"this is the label",onClickFunction:function(dialog,data){
-                                    dialog.hide();
-                                    console.log("data from button=",data);
+
+                                    console.log("dialog.selectedRows=",dialog.selectedRows);
+//                                    dialog.hide();
+//                                    console.log("data from button=",data);
                                 }};
                                 buttons.push(b1);
-                                DialogsWTable.showDialog({"title":"It is a title","buttons":buttons},data);
+                                DialogsWTable.showDialog({"title":"It is a title","buttons":buttons,width:"600px;"},data);
                             });
                 };
 

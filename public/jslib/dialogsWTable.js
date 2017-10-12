@@ -38,13 +38,37 @@ define([ "dijit/Dialog", "dijit/registry", "hTableSimple","dijit/form/Button","r
                 myDialog.startup();
                 myDialog.tableSimple=new HTableSimple();
                 myDialog.tableSimple.startup();
+                var input=document.createElement('input');
+                input.setAttribute("type", "search");
+                input.setAttribute("id", "dialog_ht_input_for_search");
+                var searchBtn=new Button({label:"Найти",id:"dialog_ht_search_btn"});
+                searchBtn.startup();
+                searchBtn.onClick=function(){
+                    var targetStr= document.getElementById("dialog_ht_input_for_search").value.toUpperCase();
+                    for(var i=0; i<myDialog.tableSimple.htData.length;i++){
+                        var rowData=myDialog.tableSimple.htData[i];
+                        var posName=rowData.NAME;
+                        if(posName.toUpperCase().indexOf(targetStr)>=0){
+                            myDialog.tableSimple.setSelectedRow(i);
+                           // myDialog.selectedRowData=rowData;
+                            break;
+                        }
+                    }
+                };
+                var label = document.createElement('label');
+                label.htmlFor = 'dialog_ht_input_for_search';
+                label.innerText = "Поиск:";
+                myDialog.content.appendChild(label);
+                myDialog.content.appendChild(input);
+                myDialog.content.appendChild(searchBtn.domNode);
                 myDialog.content.appendChild(myDialog.tableSimple.domNode);
+                myDialog.tableSimple.domNode.setAttribute("style","border:solid #b5bcc7 1px;padding:0px; margin-bottom:5px;margin-top:5px;");
             }
             if (myDialog.hasButtons) {
                var children =  myDialog.getChildren();
                 for(var j in children){
                     var child=children[j];
-                    if(child.type=="button"){
+                    if(child.type=="button"&&child.id!="dialog_ht_search_btn"){
                         child.destroy();
                     }
                 }
@@ -52,11 +76,11 @@ define([ "dijit/Dialog", "dijit/registry", "hTableSimple","dijit/form/Button","r
             if (params.title) myDialog.set("title", params.title); else myDialog.set("title", "");
 
             if(params.height){
-                styleStr=styleStr+params.height;
+                styleStr=styleStr+"height:"+params.height;
                 if(styleStr.charAt(styleStr.length-1)!=";")styleStr=styleStr+";";
             }
             if(params.width){
-                styleStr=styleStr+params.width;
+                styleStr=styleStr+'width:'+params.width;
                 if(styleStr.charAt(styleStr.length-1)!=";")styleStr=styleStr+";";
             }
             if(params.style) styleStr=styleStr+params.style;
@@ -67,7 +91,8 @@ define([ "dijit/Dialog", "dijit/registry", "hTableSimple","dijit/form/Button","r
             if(params.buttons){
                 setButtonsForDialog(myDialog,tableData, params.buttons);
             }
-                myDialog.tableSimple.setContent(tableData);
+
+            myDialog.tableSimple.setContent(tableData);
             return myDialog.show();
         }
 
@@ -77,7 +102,10 @@ define([ "dijit/Dialog", "dijit/registry", "hTableSimple","dijit/form/Button","r
                 var butObj=buttons[i];
                 var button = new Button();
                 if(butObj.label)button.set('label',butObj.label); button.set('label',butObj.label);
+
                 button.onClick=function(){
+                    console.log("myDialog.tableSimple.htData=",myDialog.tableSimple.htData);
+                    myDialog.selectedRows=myDialog.tableSimple.getSelectedRows();
                     butObj.onClickFunction(myDialog,tableData);
                 };
                 button.startup();
